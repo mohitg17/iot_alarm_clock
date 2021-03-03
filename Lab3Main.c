@@ -16,7 +16,7 @@
 #include "LCD.h"
 #include "LED.h"
 #include "Timer.h"
-#include "Switch.h"
+//#include "Switch.h"
 #include "Speaker.h"
 #include "Blynk.h"
 
@@ -141,87 +141,85 @@ void tick(void) {
 }
 
 int main(void){
-	Blynk_Init();
-//  ST7735_InitR(INITR_REDTAB);   // initialize ST7735 display
-//  Timer0A_Init(&tick);          // initialize clock timer
-//  PortDInit();                  // initialize PortD for speaker
-//  SpeakerTimerInit();           // initialize speaker SysTick timer     
+	Blynk_Init(&setMode, &setAlarm, &setMinute, &setHour, &turnOffAlarm);
+  ST7735_InitR(INITR_REDTAB);   // initialize ST7735 display
+  Timer0A_Init(&tick);          // initialize clock timer
+  PortDInit();                  // initialize PortD for speaker
+  SpeakerTimerInit();           // initialize speaker SysTick timer     
 //  SwitchInit(&setMode, &setAlarm, &setMinute, &setHour, &turnOffAlarm);  // initialize 5 switches
-//  LED_Init();                   // initialize LED heartbeat
-//	
-//	ClockTime.Hour = 10;
-//	ClockTime.Minute = 10;
-//	ClockTime.Second = 50;
+  LED_Init();                   // initialize LED heartbeat
+	
+	ClockTime.Hour = 10;
+	ClockTime.Minute = 10;
+	ClockTime.Second = 50;
 
-//	AlarmTime.Hour = 10;             // holds hour value in alarm mode
-//	AlarmTime.Minute = 11;          // hold minute value in alarm mode
+	AlarmTime.Hour = 0;             // holds hour value in alarm mode
+	AlarmTime.Minute = 0;          // hold minute value in alarm mode
 
-//	StopwatchTime.Hour = 0;
-//	StopwatchTime.Minute = 0;
-//	StopwatchTime.Second = 0;
-//  
-//  HourHandSetup();              // setup hour hand coordinates
-//  MinuteHandSetup();            // setup minute hand coordinates
-//  drawClock();                  																// draw analog clock face
-//  drawDigital(ClockTime.Hour, ClockTime.Minute);    						// draw digital time
-//  drawAnalog(ClockTime.Hour, ClockTime.Minute, ST7735_WHITE);   // draw clock hands
-//  drawAnalogSecond(ClockTime.Second, ST7735_RED);     					// draw second hand
-//  ST7735_SetCursor(8,0);
-//  ST7735_OutString("Clock");
-//  
-//  while(1) {
-//    if(counter == 2000000) {            //flip the LED bit (PF2) every 2000000 runs of while loop
-//      LED_Beat();
-//      counter = 0;
-//    } else {
-//      counter++;
-//    }
-//    if(Ticked){
-//      if(Sound == 1) {
-//        ST7735_FillScreen(ST7735_BLACK);
-//        ST7735_SetCursor(6, 8);
-//        ST7735_OutString("ALARM RING");
-//      }
-//      else {
-//        ST7735_FillScreen(ST7735_BLACK);
-//        drawClock();
-//        ST7735_SetCursor(6, 0);
-//        switch(Mode){
-//          case 0:
-//            ST7735_OutString("  Clock  ");
-//					  DisableInterrupts();
-//            drawAnalog(ClockTime.Hour, ClockTime.Minute, ST7735_WHITE);                      // draw clock hands
-//            drawAnalogSecond(ClockTime.Second, ST7735_RED);                                  // draw second hand
-//            drawDigital(ClockTime.Hour, ClockTime.Minute);                                   // write digital time
-//					  EnableInterrupts();
-//            break;
-//          case 1:
-//            ST7735_OutString("  Alarm  ");
-//					  DisableInterrupts();
-//            drawAnalog(AlarmTime.Hour, AlarmTime.Minute, ST7735_WHITE);          // draw alarm hour and minute hands
-//            drawDigital(AlarmTime.Hour, AlarmTime.Minute);                       // write digital alarm time
-//					  EnableInterrupts();
-//            break;
-//          case 2:
-//            ST7735_OutString("Stopwatch");
-//					  DisableInterrupts();
-//            drawAnalog(StopwatchTime.Hour, StopwatchTime.Minute, ST7735_WHITE);    // draw stopwatch hands
-//            drawAnalogSecond(StopwatchTime.Second, ST7735_RED);
-//            drawStopwatch(StopwatchTime.Hour, StopwatchTime.Minute, StopwatchTime.Second);    // draw stopwatch digital time
-//					  EnableInterrupts();
-//            break;
-//        }
-//        if(AlarmSetting == 1){
-//          ST7735_SetCursor(20, 0);
-//          ST7735_SetTextColor(ST7735_RED);
-//          ST7735_OutString("*");                 // display alarm set indicator
-//          ST7735_SetTextColor(ST7735_YELLOW);    // reset text color
-//        }
-//      }
-//      Ticked = false;
-//    }
-//  }
-	while (1) {
-		WaitForInterrupt();
-	}
+	StopwatchTime.Hour = 0;
+	StopwatchTime.Minute = 0;
+	StopwatchTime.Second = 0;
+  
+  HourHandSetup();              // setup hour hand coordinates
+  MinuteHandSetup();            // setup minute hand coordinates
+  drawClock();                  																// draw analog clock face
+  drawDigital(ClockTime.Hour, ClockTime.Minute);    						// draw digital time
+  drawAnalog(ClockTime.Hour, ClockTime.Minute, ST7735_WHITE);   // draw clock hands
+  drawAnalogSecond(ClockTime.Second, ST7735_RED);     					// draw second hand
+  ST7735_SetCursor(8,0);
+  ST7735_OutString("Clock");
+	EnableInterrupts();
+  
+  while(1) {
+    if(counter == 2000000) {            //flip the LED bit (PF2) every 2000000 runs of while loop
+      LED_Beat();
+      counter = 0;
+    } else {
+      counter++;
+    }
+    if(Ticked){
+      if(Sound == 1) {
+        ST7735_FillScreen(ST7735_BLACK);
+        ST7735_SetCursor(6, 8);
+        ST7735_OutString("ALARM RING");
+      }
+      else {
+        ST7735_FillScreen(ST7735_BLACK);
+        drawClock();
+        ST7735_SetCursor(6, 0);
+        switch(Mode){
+          case 0:
+            ST7735_OutString("  Clock  ");
+					  DisableInterrupts();
+            drawAnalog(ClockTime.Hour, ClockTime.Minute, ST7735_WHITE);                      // draw clock hands
+            drawAnalogSecond(ClockTime.Second, ST7735_RED);                                  // draw second hand
+            drawDigital(ClockTime.Hour, ClockTime.Minute);                                   // write digital time
+					  EnableInterrupts();
+            break;
+          case 1:
+            ST7735_OutString("  Alarm  ");
+					  DisableInterrupts();
+            drawAnalog(AlarmTime.Hour, AlarmTime.Minute, ST7735_WHITE);          // draw alarm hour and minute hands
+            drawDigital(AlarmTime.Hour, AlarmTime.Minute);                       // write digital alarm time
+					  EnableInterrupts();
+            break;
+          case 2:
+            ST7735_OutString("Stopwatch");
+					  DisableInterrupts();
+            drawAnalog(StopwatchTime.Hour, StopwatchTime.Minute, ST7735_WHITE);    // draw stopwatch hands
+            drawAnalogSecond(StopwatchTime.Second, ST7735_RED);
+            drawStopwatch(StopwatchTime.Hour, StopwatchTime.Minute, StopwatchTime.Second);    // draw stopwatch digital time
+					  EnableInterrupts();
+            break;
+        }
+        if(AlarmSetting == 1){
+          ST7735_SetCursor(20, 0);
+          ST7735_SetTextColor(ST7735_RED);
+          ST7735_OutString("*");                 // display alarm set indicator
+          ST7735_SetTextColor(ST7735_YELLOW);    // reset text color
+        }
+      }
+      Ticked = false;
+    }
+  }
 }

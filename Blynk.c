@@ -50,6 +50,13 @@ void EnableInterrupts(void);    // Defined in startup.s
 void DisableInterrupts(void);   // Defined in startup.s
 void WaitForInterrupt(void);    // Defined in startup.s
 
+//functions for updating clock
+void (*SetMode)();
+void (*SetAlarm)();
+void (*SetMinute)();
+void (*SetHour)();
+void (*TurnOffAlarm)();
+
 uint32_t LED;      // VP1
 uint32_t LastF;    // VP74
 // These 6 variables contain the most recent Blynk to TM4C123 message
@@ -105,25 +112,32 @@ void Blynk_to_TM4C(void){int j; char data;
     pin_int = atoi(Pin_Integer);  
   // ---------------------------- VP #1 ----------------------------------------
   // This VP is the LED select button
-    if(pin_num == 0x01)  {  
-      LED = pin_int;
-      PortF_Output(LED<<2); // Blue LED
-#ifdef DEBUG3
-      Output_Color(ST7735_CYAN);
-      ST7735_OutString("Rcv VP1 data=");
-      ST7735_OutUDec(LED);
-      ST7735_OutChar('\n');
-#endif
-    }                               // Parse incoming data        
-#ifdef DEBUG1
-    UART_OutString(" Pin_Number = ");
-    UART_OutString(Pin_Number);
-    UART_OutString("   Pin_Integer = ");
-    UART_OutString(Pin_Integer);
-    UART_OutString("   Pin_Float = ");
-    UART_OutString(Pin_Float);
-    UART_OutString("\n\r");
-#endif
+//    if(pin_num == 0x01)  {  
+//      LED = pin_int;
+//      PortF_Output(LED<<2); // Blue LED
+		switch(pin_num){
+			case 1: (*SetMode)(); break;
+			case 2: (*SetHour)() ; break;
+			case 3: (*SetMinute)(); break;
+			case 4: (*SetAlarm)(); break;
+			case 5: (*TurnOffAlarm)(); break;
+		}
+//#ifdef DEBUG3
+//      Output_Color(ST7735_CYAN);
+//      ST7735_OutString("Rcv VP1 data=");
+//      ST7735_OutUDec(LED);
+//      ST7735_OutChar('\n');
+//#endif
+//    }                               // Parse incoming data        
+//#ifdef DEBUG1
+//    UART_OutString(" Pin_Number = ");
+//    UART_OutString(Pin_Number);
+//    UART_OutString("   Pin_Integer = ");
+//    UART_OutString(Pin_Integer);
+//    UART_OutString("   Pin_Float = ");
+//    UART_OutString(Pin_Float);
+//    UART_OutString("\n\r");
+//#endif
   }  
 }
 
@@ -144,11 +158,18 @@ void SendInformation(void){
 }
 
   
-void Blynk_Init(void){       
+void Blynk_Init(void(*setMode)(), void(*setAlarm)(), void(*setMinute)(), void(*setHour)(), void(*sound)()){       
   PLL_Init(Bus80MHz);   // Bus clock at 80 MHz
   DisableInterrupts();  // Disable interrupts until finished with inits
   PortF_Init();
   LastF = PortF_Input();
+	
+	SetMode = setMode;
+	SetAlarm = setAlarm;
+	SetMinute = setMinute;
+	SetHour = setHour;
+	TurnOffAlarm = sound;
+	
 #ifdef DEBUG3
   Output_Init();        // initialize ST7735
   ST7735_OutString("EE445L Lab 4D\nBlynk example\n");
