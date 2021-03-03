@@ -72,6 +72,8 @@ void setHour(void) {
       AlarmTime.Hour = (AlarmTime.Hour + 1)%12;
       break;
   }
+	
+	UpdateTime(ClockTime.Hour, ClockTime.Minute, ClockTime.Second);
 }
 
 // move minute hand
@@ -84,6 +86,8 @@ void setMinute(void) {
       AlarmTime.Minute = (AlarmTime.Minute + 1) %60;
       break;
   }
+	
+	UpdateTime(ClockTime.Hour, ClockTime.Minute, ClockTime.Second);
 }
 
 void turnOffAlarm(void) {
@@ -138,6 +142,8 @@ void tick(void) {
       }
     }
   }
+	
+	UpdateTime(ClockTime.Hour, ClockTime.Minute, ClockTime.Second);
 }
 
 int main(void){
@@ -152,6 +158,8 @@ int main(void){
 	ClockTime.Hour = 10;
 	ClockTime.Minute = 10;
 	ClockTime.Second = 50;
+	
+	UpdateTime(ClockTime.Hour, ClockTime.Minute, ClockTime.Second);
 
 	AlarmTime.Hour = 0;             // holds hour value in alarm mode
 	AlarmTime.Minute = 0;          // hold minute value in alarm mode

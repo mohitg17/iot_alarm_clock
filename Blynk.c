@@ -67,6 +67,20 @@ char Pin_Integer[8]  = "0000";     //
 char Pin_Float[8]    = "0.0000";   //
 uint32_t pin_num; 
 uint32_t pin_int;
+
+uint8_t Hour;
+uint16_t Minute;
+uint16_t Second;
+
+uint8_t oldHour;
+uint16_t oldMinute;
+uint16_t oldSecond;
+
+void UpdateTime (uint8_t hour, uint16_t minute, uint16_t second){
+	Hour = hour;
+	Minute = minute;
+	Second = second;
+}
  
 // ----------------------------------- TM4C_to_Blynk ------------------------------
 // Send data to the Blynk App
@@ -115,12 +129,14 @@ void Blynk_to_TM4C(void){int j; char data;
 //    if(pin_num == 0x01)  {  
 //      LED = pin_int;
 //      PortF_Output(LED<<2); // Blue LED
-		switch(pin_num){
-			case 1: (*SetMode)(); break;
-			case 2: (*SetHour)() ; break;
-			case 3: (*SetMinute)(); break;
-			case 4: (*SetAlarm)(); break;
-			case 5: (*TurnOffAlarm)(); break;
+		if(pin_int == 1){
+			switch(pin_num){
+				case 1: (*SetMode)(); break;
+				case 2: (*SetHour)() ; break;
+				case 3: (*SetMinute)(); break;
+				case 4: (*SetAlarm)(); break;
+				case 5: (*TurnOffAlarm)(); break;
+			}
 		}
 //#ifdef DEBUG3
 //      Output_Color(ST7735_CYAN);
@@ -129,32 +145,31 @@ void Blynk_to_TM4C(void){int j; char data;
 //      ST7735_OutChar('\n');
 //#endif
 //    }                               // Parse incoming data        
-//#ifdef DEBUG1
-//    UART_OutString(" Pin_Number = ");
-//    UART_OutString(Pin_Number);
-//    UART_OutString("   Pin_Integer = ");
-//    UART_OutString(Pin_Integer);
-//    UART_OutString("   Pin_Float = ");
-//    UART_OutString(Pin_Float);
-//    UART_OutString("\n\r");
-//#endif
+#ifdef DEBUG1
+    UART_OutString(" Pin_Number = ");
+    UART_OutString(Pin_Number);
+    UART_OutString("   Pin_Integer = ");
+    UART_OutString(Pin_Integer);
+    UART_OutString("   Pin_Float = ");
+    UART_OutString(Pin_Float);
+    UART_OutString("\n\r");
+#endif
   }  
 }
 
 void SendInformation(void){
-  uint32_t thisF;
-  thisF = PortF_Input();
 // your account will be temporarily halted if you send too much data
-  if(thisF != LastF){
-    TM4C_to_Blynk(74, thisF);  // VP74
-#ifdef DEBUG3
-    Output_Color(ST7735_WHITE);
-    ST7735_OutString("Send 74 data=");
-    ST7735_OutUDec(thisF);
-    ST7735_OutChar('\n');
-#endif
-  }
-  LastF = thisF;
+  if(Hour != oldHour){
+    TM4C_to_Blynk(74, Hour);    // VP74
+	}
+	
+	if(Minute != oldMinute){
+    TM4C_to_Blynk(75, Minute);  // VP75
+	}
+
+	if(Second != oldSecond){
+    TM4C_to_Blynk(76, Second);  // VP76
+	}
 }
 
   
@@ -185,13 +200,9 @@ void Blynk_Init(void(*setMode)(), void(*setAlarm)(), void(*setMinute)(), void(*s
   Timer2_Init(&Blynk_to_TM4C,800000); 
   // check for receive data from Blynk App every 10ms
 
-  Timer3_Init(&SendInformation,40000000); 
-  // Send data back to Blynk App every 1/2 second
+  Timer3_Init(&SendInformation,20000000); 
+  // Send data back to Blynk App every 1/4 second
   EnableInterrupts();
-
-//  while(1) {   
-//    WaitForInterrupt(); // low power mode
-//  }
 }
 
 
